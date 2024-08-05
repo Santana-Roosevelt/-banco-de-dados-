@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gerenciamento de Recursos</title>
+    <link rel="stylesheet" href="painel.css">
+</head>
+<body>
+    <header>
+        <h1>Painel de Gerenciamento de Recursos</h1>
+        <nav>
+            <ul>
+                <li><a href="#veiculos">Veículos</a></li>
+                <li><a href="#equipamentos">Equipamentos</a></li>
+                <li><a href="#dispositivos">Dispositivos de Segurança</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="veiculos">
+            <h2>Gerenciar Veículos</h2>
+            <form id="veiculo-form">
+                <input type="text" id="veiculo-modelo" placeholder="Modelo" required>
+                <input type="text" id="veiculo-placa" placeholder="Placa" required>
+                <select id="veiculo-status" required>
+                    <option value="">Selecione o Status</option>
+                    <option value="Em uso">Em uso</option>
+                    <option value="Disponível">Disponível</option>
+                    <option value="Em manutenção">Em manutenção</option>
+                </select>
+                <button type="submit">Adicionar Veículo</button>
+            </form>
+            <table id="veiculos-list">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Placa</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Os veículos serão adicionados aqui dinamicamente -->
+                </tbody>
+            </table>
+        </section>
+        <section id="equipamentos">
+            <h2>Gerenciar Equipamentos</h2>
+            <form id="equipamento-form">
+                <input type="text" id="equipamento-nome" placeholder="Nome" required>
+                <input type="text" id="equipamento-tipo" placeholder="Tipo" required>
+                <select id="equipamento-status" required>
+                    <option value="">Selecione o Status</option>
+                    <option value="Funcionando">Funcionando</option>
+                    <option value="Em manutenção">Em manutenção</option>
+                </select>
+                <button type="submit">Adicionar Equipamento</button>
+            </form>
+            <table id="equipamentos-list">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Os equipamentos serão adicionados aqui dinamicamente -->
+                </tbody>
+            </table>
+        </section>
+        <section id="dispositivos">
+            <h2>Gerenciar Dispositivos de Segurança</h2>
+            <form id="dispositivo-form">
+                <input type="text" id="dispositivo-tipo" placeholder="Tipo" required>
+                <input type="text" id="dispositivo-localizacao" placeholder="Localização" required>
+                <select id="dispositivo-status" required>
+                    <option value="">Selecione o Status</option>
+                    <option value="Ativa">Ativa</option>
+                    <option value="Inativa">Inativa</option>
+                </select>
+                <button type="submit">Adicionar Dispositivo</button>
+            </form>
+            <table id="dispositivos-list">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tipo</th>
+                        <th>Localização</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Os dispositivos serão adicionados aqui dinamicamente -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Painel de Gerenciamento de Recursos</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchVeiculos();
+        });
+
+        document.getElementById('veiculo-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const modelo = document.getElementById('veiculo-modelo').value;
+            const placa = document.getElementById('veiculo-placa').value;
+            const status = document.getElementById('veiculo-status').value;
+
+            const veiculoData = {
+                modelo: modelo,
+                placa: placa,
+                status: status
+            };
+
+            fetch('http://127.0.0.1:5000/inserir_veiculo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(veiculoData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Veículo adicionado com sucesso!');
+                fetchVeiculos(); // Atualiza a lista de veículos
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Ocorreu um erro ao adicionar o veículo.');
+            });
+        });
+
+        function fetchVeiculos() {
+            fetch('http://127.0.0.1:5000/listar_veiculos')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#veiculos-list tbody');
+                    tbody.innerHTML = ''; // Limpa a tabela antes de adicionar os novos dados
+
+                    data.forEach(veiculo => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${veiculo.id}</td>
+                            <td>${veiculo.modelo}</td>
+                            <td>${veiculo.placa}</td>
+                            <td>${veiculo.status}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+        }
+    </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchEquipamentos(); 
+    });
+
+    document.getElementById('equipamento-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const nome = document.getElementById('equipamento-nome').value;
+        const tipo = document.getElementById('equipamento-tipo').value;
+        const status = document.getElementById('equipamento-status').value;
+
+        const equipamentoData = {
+            nome: nome,
+            tipo: tipo,
+            status: status
+        };
+
+        fetch('http://127.0.0.1:5000/inserir_equipamento', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(equipamentoData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Equipamento adicionado com sucesso!');
+            fetchEquipamentos(); // Atualiza a lista de equipamentos
+            document.getElementById('equipamento-form').reset(); // Reseta o formulário
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Ocorreu um erro ao adicionar o equipamento.');
+        });
+    });
+
+    function fetchEquipamentos() {
+        fetch('http://127.0.0.1:5000/listar_equipamentos')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#equipamentos-list tbody');
+                tbody.innerHTML = ''; // Limpa a tabela antes de adicionar os novos dados
+
+                data.forEach(equipamento => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${equipamento.id}</td>
+                        <td>${equipamento.nome}</td>
+                        <td>${equipamento.tipo}</td>
+                        <td>${equipamento.status}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('dispositivo-form');
+        const dispositivosList = document.getElementById('dispositivos-list').getElementsByTagName('tbody')[0];
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const tipo = document.getElementById('dispositivo-tipo').value;
+            const localizacao = document.getElementById('dispositivo-localizacao').value;
+            const status = document.getElementById('dispositivo-status').value;
+
+            const data = {
+                tipo: tipo,
+                localizacao: localizacao,
+                status: status
+            };
+
+            fetch('http://127.0.0.1:5000/inserir_dispositivo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    listarDispositivos(); 
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        function listarDispositivos() {
+            fetch('http://127.0.0.1:5000/listar_dispositivo')
+            .then(response => response.json())
+            .then(data => {
+                dispositivosList.innerHTML = '';
+                data.forEach(dispositivo => {
+                    const row = dispositivosList.insertRow();
+                    row.insertCell(0).textContent = dispositivo.id;
+                    row.insertCell(1).textContent = dispositivo.tipo;
+                    row.insertCell(2).textContent = dispositivo.localizacao;
+                    row.insertCell(3).textContent = dispositivo.status;
+                });
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        listarDispositivos(); 
+    });
+</script>
+
+
+    <script src="scripts.js"></script>
+</body>
+</html>

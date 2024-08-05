@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Users</title>
+</head>
+<body>
+    <button id="fetchButton">Fetch Users</button>
+    <div id="usersList"></div>
+
+    <script>
+        document.getElementById('fetchButton').addEventListener('click', function() {
+            fetch('http://127.0.0.1:5000/list_user')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    const usersList = document.getElementById('usersList');
+                    usersList.innerHTML = ''; // Clear previous data
+                    data.forEach(user => {
+                        const userDiv = document.createElement('div');
+                        userDiv.textContent = `ID: ${user.id}, Equipamentos: ${user.equipamentos}, Veículos: ${user.veiculos}, Dispositivo de Segurança: ${user.dispositivo_seguranca}`;
+                        usersList.appendChild(userDiv);
+                    });
+                })
+                .catch(error => console.error('Error fetching users:', error));
+        });
+    </script>
+</body>
+</html>
